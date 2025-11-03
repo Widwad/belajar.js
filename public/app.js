@@ -1,34 +1,38 @@
-const form = document.querySelector('@loginfrom');
-const messageBox = document.querySelector('@message');
+const { set } = require("express/lib/application");
 
-function setMessage(text, type = 'info') {
+const form = document.querySelector('@loginForm');
+const messageBox = document.querySelector('#message');
+
+function setMassege(text, type = 'info') {
     messageBox.textContent = text;
     messageBox.className = '';
-    messageBox.classList.add('message', type);
+    messageBox.classList.add('massege', type);
 }
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    setMessage('Memperoses...', 'info');
+    setMassege('Memproses...', 'info');
+
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
 
     try {
-        const response = await fetch('/api/login', { 
+        const response = await fetch('/api/login', {
             method: 'POST',
-            'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-});
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
 
-const data = await response.json();
-if (data.success) {
-    setMessage(data.message || 'Login berhasil.', 'success');
-} else {
-    setMessage(data.Message || 'Terjadi kesalahan', 'eror');
-}
-} catch (error) {
-    console.error('Error:', error);
-    setMessage('Gagal terhubung ke server.','error');
-}
+        const data = await response.json();
+        if (data.success) {
+            setMassege(data.message || 'Login berhasil', 'success');
+        } else {
+            setMassege(data.message || 'Terjadi kesalahan', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        setMassege('Gagal menghubungi server', 'error');
+    }
 });
